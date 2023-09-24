@@ -1,1 +1,2 @@
-print('hello word')
+x = input("Введите: ")
+print('hello word {x}')
