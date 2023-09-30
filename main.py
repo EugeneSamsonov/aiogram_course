@@ -14,5 +14,5 @@ def get_user_info(user: User) -> str:
            f'а email - {user.email}'
 
 
-user_1: User = User(24, 'Vasilii', 26, 'vasya_pupkining@pochta.ru')
+user_1: User = User(1, 'Vasiliy', 26, 'vasya_pupkining@pochta.ru')
 print(get_user_info(user_1))
