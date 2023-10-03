@@ -1,35 +1,31 @@
-import telebot
+from aiogram import Bot, Dispatcher
+from aiogram.types import Message
+from aiogram.filters import Command
 import config
-import speech_recognition as SRG
-from pydub import AudioSegment
 
-language='ru_RU'
-bot = telebot.TeleBot(config.TOKEN)
-r = SRG.Recognizer()
+bot = Bot(config.TOKEN)
+dp = Dispatcher()
 
-def recognise(filename):
-    with SRG.AudioFile(filename) as source:
-        audio_text = r.listen(source)
-        try:
-            text = r.recognize_google(audio_text,language=language)
-            return text
-        except:
-            return "Ошибка, попробуйте снова"
+@dp.message(Command(commands=["start"]))
+async def start_command(message: Message):
+    await message.answer('Привет я эхо-бот')
 
-@bot.message_handler(content_types=['voice'])
-def voice_processing(message):
-    src = f"voice/{message.from_user.id}.ogg"
-    dst = f"voice/{message.from_user.id}_result.wav"
+@dp.message(Command(commands=['help']))
+async def help_command(message: Message):
+    await message.answer('Напиши мне что-нибудь')
 
-    file_info = bot.get_file(message.voice.file_id)
-    downloaded_file = bot.download_file(file_info.file_path)
-    with open(src, 'wb') as new_file:
-        new_file.write(downloaded_file)
+@dp.message()
+async def send_echo(message: Message):
+    try:
+        await message.send_copy(chat_id=message.chat.id)
+    except TypeError:
+        await message.reply(
+            text='Данный тип апдейтов не поддерживается '
+                 'методом send_copy'
+        )
 
-    sound = AudioSegment.from_ogg(src)
-    sound.export(dst, format="wav")
 
-    text = recognise(dst)
-    bot.reply_to(message, text)
 
-bot.polling()
+
+if __name__ == '__main__':
+    dp.run_polling(bot)
