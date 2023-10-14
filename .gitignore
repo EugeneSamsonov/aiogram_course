@@ -63,3 +63,7 @@ docs/html
 
 # pynev
 .python-version
+
+# other
+config.py
+main_2.py
